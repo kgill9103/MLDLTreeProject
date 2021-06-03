@@ -19,8 +19,8 @@ def get_thickness(nodes, obj_to_real_pts):
     arr = np.array(arr)
     min_values = np.min(arr, axis=0)
     max_values = np.max(arr, axis=0)
-    x_thickness = max_values[0] - min_values[0] + 1
-    y_thickness = max_values[2] - min_values[2] + 1
+    x_thickness = max_values[0] - min_values[0]
+    y_thickness = max_values[2] - min_values[2]
     thickness = (x_thickness * y_thickness) / 4
     return thickness
 

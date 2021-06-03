@@ -49,9 +49,9 @@ class BuildObjGraph:
             obj_list.append((a,b,c))
             idx_to_obj[idx] = (a,b,c)
             if (a,b,c) in obj_to_real_pts:
-                obj_to_real_pts[(a,b,c)].append((i,j,k))
+                obj_to_real_pts[(a,b,c)].append((i*unit,j*unit,k*unit))
             else:
-                obj_to_real_pts[(a,b,c)] = [(i,j,k)]
+                obj_to_real_pts[(a,b,c)] = [(i*unit,j*unit,k*unit)]
 
         return obj_list, idx_to_obj, obj_to_real_pts
 
