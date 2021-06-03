@@ -17,7 +17,7 @@ def main(argv):
 
     args=parser.parse_args()
 
-    filename = 'tree.obj'
+    filename = './obj_data/tree.obj'
     if args.obj is not None:
         filename = f'./obj_data/{args.obj}'
 

@@ -9,7 +9,7 @@ class BuildObjGraph:
 
     def __init__(self, x, y, z, faces, n_size=50):
         unit = self._unit(x, y, z, n_size)
-        self.obj_list, self.idx_to_obj = self._vertext2voxel(x, y, z, unit)
+        self.obj_list, self.idx_to_obj, self.obj_to_real_pts = self._vertext2voxel(x, y, z, unit)
         self.edges = self._edges(faces)
         self.graph = self._graph(self.obj_list)
         self.g = self._graph(self.obj_list)
@@ -42,13 +42,18 @@ class BuildObjGraph:
 
         obj_list = []
         idx_to_obj = dict()
+        obj_to_real_pts = dict()
 
         for idx, (i,j,k) in enumerate(zip(x, y, z)):
             a, b, c = round(i*unit) - x_min, round(j*unit) - y_min, round(k*unit) - z_min
             obj_list.append((a,b,c))
             idx_to_obj[idx] = (a,b,c)
+            if (a,b,c) in obj_to_real_pts:
+                obj_to_real_pts[(a,b,c)].append((i,j,k))
+            else:
+                obj_to_real_pts[(a,b,c)] = [(i,j,k)]
 
-        return obj_list, idx_to_obj
+        return obj_list, idx_to_obj, obj_to_real_pts
 
     def _graph(self, obj_list):
         g = nx.Graph()

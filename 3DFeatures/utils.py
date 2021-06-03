@@ -12,13 +12,16 @@ def get_center_node(nodes):
     arr = np.mean(arr, axis=0, dtype=int)
     return tuple(arr)
 
-def get_thickness(nodes):
-    arr = np.array(list(nodes))
+def get_thickness(nodes, obj_to_real_pts):
+    arr = []
+    for node in nodes:
+        arr.extend(obj_to_real_pts[node])
+    arr = np.array(arr)
     min_values = np.min(arr, axis=0)
     max_values = np.max(arr, axis=0)
-    x_thickness = max_values[0] - min_values[0]
-    y_thickness = max_values[2] - min_values[2]
-    thickness = (x_thickness + y_thickness) / 2
+    x_thickness = max_values[0] - min_values[0] + 1
+    y_thickness = max_values[2] - min_values[2] + 1
+    thickness = (x_thickness * y_thickness) / 4
     return thickness
 
 def tuple_distance(a, b):
