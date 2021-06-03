@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import json
 import ast
+import numpy as np
 
 result = nx.Graph()
 
@@ -22,5 +23,9 @@ ax.scatter(*zip(*list(result.nodes)), s=1)
 
 for edge in result.edges:
     ax.plot(*zip(*edge), 'ro-')
+xx, zz = np.meshgrid(range(50), range(50))
+yy = 27
+
+ax.plot_surface(xx, yy, zz, alpha=0.2)
 
 plt.show()

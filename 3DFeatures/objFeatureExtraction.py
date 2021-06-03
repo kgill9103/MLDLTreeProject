@@ -45,13 +45,14 @@ class objFeatureDiGraph:
 
     def __init__(self, objGraph):
         distance_map, obj_list, y_len, edges, root = objGraph.distance_map, objGraph.obj_list, objGraph.y_len, objGraph.edges, objGraph.root
+        obj_to_real_pts = objGraph.obj_to_real_pts
         self.result = nx.DiGraph()
-        self.node_to_obj, self.result_root = self._add_node(obj_list, y_len, root, edges)
+        self.node_to_obj, self.result_root = self._add_node(obj_list, y_len, root, edges, obj_to_real_pts)
         self.node_distance_map = self._node_distance_map(distance_map)
         self._add_edge(edges)
         self._remove_unecessary_nodes()
 
-    def _add_node(self, obj_list, y_len, root, edges):
+    def _add_node(self, obj_list, y_len, root, edges, obj_to_real_pts):
         node_to_obj = dict()
         empty_y = []
         for yv in tqdm(range(y_len)):
@@ -73,12 +74,15 @@ class objFeatureDiGraph:
             
             for components in list(nx.connected_components(tmp)):
                 center_node = get_center_node(components)
+                thickness = get_thickness(components, obj_to_real_pts)
                 if root in components:
                     result_root = center_node
                 if center_node in node_to_obj:
                     node_to_obj[center_node].update(components)
+                    thickness = get_thickness(node_to_obj[center_node], obj_to_real_pts)
+                    self.result.nodes[center_node]['thickness'] = thickness
                 else:
-                    self.result.add_node(center_node)
+                    self.result.add_node(center_node, thickness=thickness)
                     node_to_obj[center_node] = components
         return node_to_obj, result_root
 
