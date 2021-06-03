@@ -5,6 +5,8 @@ sys.path.append(f'{os.getcwd()}/3DFeatures')
 
 from objFeatureExtraction import *
 from build_obj_graph import *
+from utils import *
+import networkx as nx
 
 def main(argv):
 
@@ -40,8 +42,9 @@ def main(argv):
 
     result = resultGraph.result
     node_distance_map = resultGraph.node_distance_map
+    nodes = convert_attributes_format(nx.get_node_attributes(result, 'thickness'), 'thickness')
     f = open('result3d.txt', 'w')
-    f.write(str(list(result.nodes)))
+    f.write(str(nodes))
     f.write('\n')
     f.write(str(list(result.edges)))
     f.write('\n')

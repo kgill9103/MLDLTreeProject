@@ -12,6 +12,15 @@ def get_center_node(nodes):
     arr = np.mean(arr, axis=0, dtype=int)
     return tuple(arr)
 
+def get_thickness(nodes):
+    arr = np.array(list(nodes))
+    min_values = np.min(arr, axis=0)
+    max_values = np.max(arr, axis=0)
+    x_thickness = max_values[0] - min_values[0]
+    y_thickness = max_values[2] - min_values[2]
+    thickness = (x_thickness + y_thickness) / 2
+    return thickness
+
 def tuple_distance(a, b):
     arr_a = np.array(a)
     arr_b = np.array(b)
@@ -27,3 +36,10 @@ def get_distance(g, node, key='d'):
             if v < min:
                 min = v
     return min
+
+def convert_attributes_format(attribute_dict, attribute_name):
+    changed_format = []
+    for node in attribute_dict:
+        t = (node, {attribute_name:attribute_dict[node]})
+        changed_format.append(t)
+    return changed_format

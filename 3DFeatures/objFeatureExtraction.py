@@ -73,12 +73,15 @@ class objFeatureDiGraph:
             
             for components in list(nx.connected_components(tmp)):
                 center_node = get_center_node(components)
+                thickness = get_thickness(components)
                 if root in components:
                     result_root = center_node
                 if center_node in node_to_obj:
                     node_to_obj[center_node].update(components)
+                    thickness = get_thickness(node_to_obj[center_node])
+                    self.result.nodes[center_node]['thickness'] = thickness
                 else:
-                    self.result.add_node(center_node)
+                    self.result.add_node(center_node, thickness=thickness)
                     node_to_obj[center_node] = components
         return node_to_obj, result_root
 
