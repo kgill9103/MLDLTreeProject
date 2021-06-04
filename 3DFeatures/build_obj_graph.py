@@ -7,11 +7,10 @@ import numpy as np
 
 class BuildObjGraph:
 
-    def __init__(self, x, y, z, faces, n_size=50):
+    def __init__(self, x, y, z, faces, pairs=None, n_size=50):
         unit = self._unit(x, y, z, n_size)
         self.obj_list, self.idx_to_obj, self.obj_to_real_pts = self._vertext2voxel(x, y, z, unit)
-        self.edges = self._edges(faces)
-        self.graph = self._graph(self.obj_list)
+        self.edges = self._edges(faces) if pairs is None else self._edges_from_pair(pairs)
         self.g = self._graph(self.obj_list)
         self.root = self._root(self.obj_list)
         self.y_len = self._y_len(y, unit)
@@ -33,6 +32,14 @@ class BuildObjGraph:
             e3 = (self.idx_to_obj[face[2]], self.idx_to_obj[face[0]])
             edges.extend([e1, e2, e3])
 
+        edges = set(edges)
+        return edges
+    
+    def _edges_from_pair(self, pairs):
+        edges = []
+        for pair in pairs:
+            edge = (self.idx_to_obj[pair[0]], self.idx_to_obj[pair[1]])
+            edges.append(edge)
         edges = set(edges)
         return edges
 

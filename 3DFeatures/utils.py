@@ -1,5 +1,7 @@
 import numpy as np
 from sklearn.decomposition import PCA
+import warnings
+warnings.filterwarnings("error")
 
 class GraphConnectionError(Exception):
     def __init__(self, msg):
@@ -52,21 +54,24 @@ def convert_attributes_format(attribute_dict, attribute_name):
     return changed_format
 
 def pca(X):
-    # Normalizing X
-    norm_X = X-X.mean(axis=0)
-    norm_X = norm_X/X.std(axis=0)
+    try:
+        # Normalizing X
+        norm_X = X-X.mean(axis=0)
+        norm_X = norm_X/X.std(axis=0)
 
-    # Covariance Matrix
-    cov_norm_X = np.cov(norm_X.T)
+        # Covariance Matrix
+        cov_norm_X = np.cov(norm_X.T)
 
-    # Correlation Matrix
-    corr_norm_X = np.corrcoef(norm_X.T)
+        # Correlation Matrix
+        corr_norm_X = np.corrcoef(norm_X.T)
 
-    # Eigendecomposition
-    eigen_val, eigen_vec = np.linalg.eig(cov_norm_X)
+        # Eigendecomposition
+        eigen_val, eigen_vec = np.linalg.eig(cov_norm_X)
 
-    z1 = eigen_vec[:,0][0] * norm_X[:,0] + eigen_vec[:,0][1] * norm_X[:,1]
-    z2 = eigen_vec[:,1][0] * norm_X[:,0] + eigen_vec[:,1][1] * norm_X[:,1]
-    pca_res = np.vstack([z1,z2]).T
+        z1 = eigen_vec[:,0][0] * norm_X[:,0] + eigen_vec[:,0][1] * norm_X[:,1]
+        z2 = eigen_vec[:,1][0] * norm_X[:,0] + eigen_vec[:,1][1] * norm_X[:,1]
+        pca_res = np.vstack([z1,z2]).T
 
-    return pca_res[:,:2]
+        return pca_res[:,:2]
+    except:
+        return X

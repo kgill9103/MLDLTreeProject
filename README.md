@@ -9,9 +9,10 @@
 + tree.obj (간단한 이미지)
 + tree_hard.obj (복잡한 이미지)
 
-obj : 읽어들일 obj 파일 이름 (default : tree.obj)
+f : 읽어들일 obj, pcd 파일 이름 (default : tree.obj)
+n_size : 데이터를 옮길 voxel 사이즈 (default : 50)
 
 ```
-python3 run.py --obj=tree.obj
+python3 run.py --f=tree.obj
 ```
 
