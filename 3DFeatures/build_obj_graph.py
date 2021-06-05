@@ -4,6 +4,7 @@ from itertools import permutations
 from utils import *
 from tqdm.auto import tqdm
 import numpy as np
+from sklearn.neighbors import KDTree, BallTree
 
 class BuildObjGraph:
 
@@ -102,4 +103,54 @@ class BuildObjGraph:
 
     def _check_graph_connectivity(self):
         if not len(list(nx.bfs_tree(self.g, self.root))) == len(list(self.g.nodes)):
+            self._add_additional_edge()
+            # raise GraphConnectionError("Graph is not connected, Please resize n_size")
+
+    def _add_additional_edge(self):
+        # g 를 구성하는 그룹
+        components = list(nx.connected_components(self.g))
+
+        # 노드를 좌표로 변환
+        components_pts = []
+        for component in components:
+            cs = list(component)
+            components_pts.append(cs)
+        
+        # 그룹 간의 거리 계산
+        num_groups = len(components_pts)
+        group_to_nearest_pt = dict()
+        group_to_distance = []
+        for i, g1 in enumerate(components_pts):
+            kdt = KDTree(g1, leaf_size=2, metric='euclidean')
+            for j, g2 in enumerate(components_pts):
+                if i >= j:
+                    continue
+                distance, ind = kdt.query(g2, k=2)
+                nearest_pt2 = np.argmin(distance[:,1]) # g2 에서의 pt
+                nearest_pt1 = ind[nearest_pt2, 1]      # g1 에서의 pt
+                nearest_distance = distance[nearest_pt2, 1]
+                group_to_nearest_pt[(i,j)] = (g1[nearest_pt1], g2[nearest_pt2])
+                group_to_distance.append(((i,j), nearest_distance))
+        
+        group_to_distance = sorted(group_to_distance, key=lambda x:x[1])
+
+        # 그룹 연결 관계 확인용 그래프
+        G = nx.Graph()
+
+        for i in range(len(components_pts)):
+            G.add_node(i)
+
+        for pair, distance in group_to_distance:
+            a, b = pair
+            if nx.has_path(G, a, b):
+                continue
+            else:
+                x, y = group_to_nearest_pt[(a, b)]
+                self.g.add_edge(x, y)
+                self.edges.add((x, y))
+                G.add_edge(a, b)
+            if nx.is_connected(G):
+                break
+        
+        if not nx.is_connected(self.g):
             raise GraphConnectionError("Graph is not connected, Please resize n_size")

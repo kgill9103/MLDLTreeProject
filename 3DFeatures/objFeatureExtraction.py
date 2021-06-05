@@ -19,6 +19,9 @@ class objFeatureDiGraph:
         self._add_edge(edges)
         self._remove_unecessary_nodes()
 
+        self._check_graph_connectivity()
+        self._check_tree()
+
     def _add_node(self, obj_list, y_len, root, edges, obj_to_real_pts):
         node_to_obj = dict()
         empty_y = []
@@ -104,6 +107,10 @@ class objFeatureDiGraph:
 
     def _check_graph_connectivity(self):
         if not len(list(nx.bfs_tree(self.result, self.result_root))) == len(list(self.result.nodes)):
+            raise GraphConnectionError("Result Graph is not connected, Please resize n_size")
+
+    def _check_tree(self):
+        if self.result.number_of_nodes() - self.result.number_of_edges() != 1:
             raise GraphConnectionError("Result Graph is not connected, Please resize n_size")
 
     def is_node_connected(self, n1, n2, edges):
