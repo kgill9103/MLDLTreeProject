@@ -8,39 +8,6 @@ import networkx as nx
 from utils import *
 from itertools import product
 
-class ObjtoArray:
-
-    def __init__(self, obj_data):
-        vertices, faces = self._obj_data_to_mesh3d(obj_data)
-        self.vertices = vertices
-        self.faces = faces
-        self.xyz = vertices[:,:3].T
-
-    def _obj_data_to_mesh3d(self, odata):
-        # odata is the string read from an obj file
-        vertices = []
-        faces = []
-        lines = odata.splitlines()   
-    
-        for line in lines:
-            slist = line.split()
-            if slist:
-                if slist[0] == 'v':
-                    vertex = np.array(slist[1:], dtype=float)
-                    vertices.append(vertex)
-                elif slist[0] == 'f':
-                    face = []
-                    for k in range(1, len(slist)):
-                        face.append([int(s) for s in slist[k].replace('//','/').split('/')])
-                    if len(face) > 3: # triangulate the n-polyonal face, n>3
-                        faces.extend([[face[0][0]-1, face[k][0]-1, face[k+1][0]-1] for k in range(1, len(face)-1)])
-                    else:    
-                        faces.append([face[j][0]-1 for j in range(len(face))])
-                else: pass
-        
-        
-        return np.array(vertices), np.array(faces)
-
 class objFeatureDiGraph:
 
     def __init__(self, objGraph):
@@ -51,6 +18,9 @@ class objFeatureDiGraph:
         self.node_distance_map = self._node_distance_map(distance_map)
         self._add_edge(edges)
         self._remove_unecessary_nodes()
+
+        self._check_graph_connectivity()
+        self._check_tree()
 
     def _add_node(self, obj_list, y_len, root, edges, obj_to_real_pts):
         node_to_obj = dict()
@@ -137,6 +107,10 @@ class objFeatureDiGraph:
 
     def _check_graph_connectivity(self):
         if not len(list(nx.bfs_tree(self.result, self.result_root))) == len(list(self.result.nodes)):
+            raise GraphConnectionError("Result Graph is not connected, Please resize n_size")
+
+    def _check_tree(self):
+        if self.result.number_of_nodes() - self.result.number_of_edges() != 1:
             raise GraphConnectionError("Result Graph is not connected, Please resize n_size")
 
     def is_node_connected(self, n1, n2, edges):
