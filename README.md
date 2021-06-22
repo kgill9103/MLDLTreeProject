@@ -64,7 +64,8 @@ model.run()
 prunedPlot()
 
 ## Structure of txt file that contains information of the nodes
+```
 [nodes as (x, y, z)]\n
 [(node1, node2) as ((x1, y1, z1), (x2, y2, z2))]\n
 {node:distance from root as (x, y, z):dist}
-
+```
